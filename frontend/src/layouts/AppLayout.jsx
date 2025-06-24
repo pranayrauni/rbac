@@ -26,7 +26,7 @@ export default function AppLayout() {
 
   return (
     <div className="min-h-screen flex bg-gray-100">
-      {/* Sidebar */}
+
       <aside className="w-64 bg-white shadow-lg hidden md:block">
         <div className="p-4 font-bold text-lg border-b border-gray-200">
           RBAC Admin

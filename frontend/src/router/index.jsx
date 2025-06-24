@@ -33,7 +33,7 @@ export default function AppRoutes() {
         }
       >
         <Route path="dashboard" element={<Dashboard />} />
-        {/* Add other protected routes here */}
+ 
         <Route path="products" element={<ProductList />} />
         <Route path="users" element={<UserList />} />
         <Route path="employees" element={<EmployeeList />} />
