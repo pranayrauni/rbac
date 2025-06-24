@@ -9,5 +9,6 @@ const User = sequelize.define('User', {
 });
 
 User.belongsTo(Enterprise, { foreignKey: 'enterpriseId' });
+Enterprise.hasMany(User, { foreignKey: 'enterpriseId' });
 
 export default User;

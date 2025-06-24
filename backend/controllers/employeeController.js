@@ -1,7 +1,12 @@
-import { Employee } from '../models/index.js';
+import { Employee, Enterprise } from '../models/index.js';
 
 export const getEmployees = async (req, res) => {
-  const employees = await Employee.findAll();
+  const employees = await Employee.findAll({
+    include: {
+      model: Enterprise,
+      attributes: ['name']
+    }
+  });
   res.json(employees);
 };
 

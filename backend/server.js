@@ -10,11 +10,16 @@ import employeeRoutes from "./routes/employees.js";
 import enterpriseRoutes from "./routes/enterprises.js";
 import productRoutes from "./routes/products.js";
 import dashboardRoutes from "./routes/dashboard.js";
+import cors from 'cors'
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
+app.use(cors({
+  // origin: 'http://localhost:5173', // your frontend dev URL
+  // credentials: true
+}))
 
 app.get("/", (req, res) => {
   res.send("RBAC system is running...");

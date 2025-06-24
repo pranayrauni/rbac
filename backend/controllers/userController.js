@@ -1,4 +1,4 @@
-import { User, Role, Enterprise } from '../models/index.js';
+import { User, Role, Enterprise, Permission } from '../models/index.js';
 
 export const assignRole = async (req, res) => {
   try {
@@ -50,19 +50,62 @@ export const updateUser = async (req, res) => {
 
 
 export const getMe = async (req, res) => {
-  const user = req.user; 
+  try {
+    const user = await User.findByPk(req.user.id, {
+      include: [
+        {
+          model: Enterprise,
+          attributes: ['name']
+        },
+        {
+          model: Role,
+          include: [Permission]
+        }
+      ]
+    });
 
-  const roles = user.Roles.map(r => r.name);
-  const permissions = user.Roles.flatMap(role =>
-    role.Permissions.map(p => p.name)
-  );
+    const roles = user.Roles.map(r => r.name);
+    const permissions = user.Roles.flatMap(role =>
+      role.Permissions.map(p => p.name)
+    );
 
-  res.json({
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    enterpriseId: user.enterpriseId,
-    roles,
-    permissions: [...new Set(permissions)] 
-  });
+    res.json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      enterprise: user.Enterprise?.name || null,
+      roles,
+      permissions: [...new Set(permissions)]
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch profile' });
+  }
 };
+
+
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.findAll({
+      include: [
+        { model: Role, attributes: ['name'] },
+        { model: Enterprise, attributes: ['name'] }
+      ],
+      attributes: ['id', 'name', 'email', 'enterpriseId']
+    })
+    res.json(users)
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch users' })
+  }
+} 
+
+
+export const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params
+    const deleted = await User.destroy({ where: { id } })
+    if (!deleted) return res.status(404).json({ message: 'User not found' })
+    res.json({ message: 'User deleted successfully' })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+}
