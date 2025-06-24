@@ -1,61 +1,60 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import axios from '../api/axios'
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "../api/axios";
+import { Link } from "react-router-dom";
 
 export default function SignupWithRole() {
-  const [roles, setRoles] = useState([])
+  const [roles, setRoles] = useState([]);
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    roleId: ''
-  })
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
-  const navigate = useNavigate()
+    name: "",
+    email: "",
+    password: "",
+    roleId: "",
+  });
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRoles = async () => {
       try {
-        const res = await axios.get('/roles')
-        setRoles(res.data)
+        const res = await axios.get("/roles");
+        setRoles(res.data);
       } catch {
-        setError('Failed to load roles')
+        setError("Failed to load roles");
       }
-    }
-    fetchRoles()
-  }, [])
+    };
+    fetchRoles();
+  }, []);
 
-  const handleChange = e =>
-    setFormData({ ...formData, [e.target.name]: e.target.value })
+  const handleChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const handleSubmit = async e => {
-    e.preventDefault()
-    setError('')
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
     try {
-      // Register the user
-      const reg = await axios.post('/auth/register', {
+      const reg = await axios.post("/auth/register", {
         name: formData.name,
         email: formData.email,
-        password: formData.password
-      })
+        password: formData.password,
+      });
 
-      const userId = reg.data.user.id
+      const userId = reg.data.user.id;
 
-      // Assign selected role
       if (formData.roleId) {
-        await axios.post('/users/assign-role', {
+        await axios.post("/users/assign-role", {
           userId,
-          roleId: formData.roleId
-        })
+          roleId: formData.roleId,
+        });
       }
 
-      setSuccess('Registered successfully. Redirecting to login...')
-      setTimeout(() => navigate('/login'), 1500)
+      setSuccess("Registered successfully. Redirecting to login...");
+      setTimeout(() => navigate("/login"), 1500);
     } catch (err) {
-      setError(err.response?.data?.message || 'Signup failed')
+      setError(err.response?.data?.message || "Signup failed");
     }
-  }
+  };
 
   return (
     <div className="max-w-md mx-auto bg-white shadow p-6 mt-10 rounded">
@@ -100,17 +99,26 @@ export default function SignupWithRole() {
           className="w-full border p-2 rounded"
         >
           <option value="">Select Role</option>
-          {roles.map(role => (
+          {roles.map((role) => (
             <option key={role.id} value={role.id}>
               {role.name}
             </option>
           ))}
         </select>
 
-        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
+        <button
+          type="submit"
+          className="bg-blue-600 text-white px-4 py-2 rounded"
+        >
           Register
         </button>
       </form>
+      <p className="text-sm text-center mt-4">
+        Already have an account?{" "}
+        <Link to="/login" className="text-blue-600 hover:underline">
+          Login
+        </Link>
+      </p>
     </div>
-  )
+  );
 }
